@@ -1,7 +1,33 @@
-"""Contains the methods to solve a Sudoku board.
+"""Contains the methods to generate, solve and diplay (console) a Sudoku board.
 
 Example use case at the bottom.
-""" 
+"""
+from random import sample
+
+def generate_board():
+    """Generates a solvable sudoku board containing only 17 numbers.
+
+    A sudoku board with 17 numbers has unique solution.
+
+    Returns:
+        The generated board.
+    """
+
+    # Using random.sample, we generate two lists containing numbers 0-8, where
+    # 0-2, 3-5, 6-8 are grouped together.
+    rows = [ g*3 + r for g in sample(range(3), 3) for r in sample(range(3), 3) ]
+    cols = [ g*3 + c for g in sample(range(3), 3) for c in sample(range(3), 3) ]
+    # We generate a list of 1-9 with random sampling.
+    values = sample(range(1, 10), 9)
+    # We generate a complete board using the numbers of values and the ordering
+    # of rows and cols.
+    board = [[values[(3*(r%3)+r//3+c)%9] for c in cols] for r in rows]
+
+    # We chose random 81-17=64 positions to erase the value.
+    for i in sample(range(81), 64):
+        board[i//9][i%9] = 0
+
+    return board
 
 def get_empty_space(board):
     """Searches a empty space in the board.
@@ -70,18 +96,26 @@ def solve(board):
             board[row][col] = 0
     return False
 
+def print_board(board):
+    """Prints the board to the console with styling.
+
+    Args:
+        board: Sudoku board.
+    """
+    string = ""
+    for i in range(9):
+        if i == 0:
+            string += "╔═══╤═══╤═══╦═══╤═══╤═══╦═══╤═══╤═══╗\n"
+        elif i % 3 == 0:
+            string += "╠═══╪═══╪═══╬═══╪═══╪═══╬═══╪═══╪═══╣\n"
+        else:
+            string += "╟───┼───┼───╫───┼───┼───╫───┼───┼───╢\n"
+        string += "║ {} │ {} │ {} ║ {} │ {} │ {} ║ {} │ {} │ {} ║\n".format(*board[i])
+    string += "╚═══╧═══╧═══╩═══╧═══╧═══╩═══╧═══╧═══╝\n"
+    print(string)
 
 if __name__ == '__main__':
-    example = [
-        [5, 3, 0, 0, 7, 0, 0, 0, 0],
-        [6, 0, 0, 1, 9, 5, 0, 0, 0],
-        [0, 9, 8, 0, 0, 0, 0, 6, 0],
-        [8, 0, 0, 0, 6, 0, 0, 0, 3],
-        [4, 0, 0, 8, 0, 3, 0, 0, 1],
-        [7, 0, 0, 0, 2, 0, 0, 0, 6],
-        [0, 6, 0, 0, 0, 0, 2, 8, 0],
-        [0, 0, 0, 4, 1, 9, 0, 0, 5],
-        [0, 0, 0, 0, 8, 0, 0, 7, 9]
-    ]
-    print(solve(example))
-    print(example)
+    example = generate_board()
+    print_board(example)
+    solve(example)
+    print_board(example)
