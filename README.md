@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/enriquejiwa/sudoku-solver/blob/main/assets/icon.png">
+  <img src="https://github.com/enriquejiwa/sudoku-solver/blob/main/assets/icon.png" width="256" height="256">
   <h1 align="center">sudoku-solver</h2>
   <p align="center">
     <a href="https://github.com/enriquejiwa/sudoku-solver/blob/main/LICENSE">
