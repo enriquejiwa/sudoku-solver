@@ -3,12 +3,19 @@
 Example use case at the bottom.
 """
 from random import sample
+from copy import deepcopy
+import time
+
 
 class Sudoku():
     """Class containing the sudoku board and the methods to generate and solve.
     """
+
     def __init__(self):
+        self.board = None
+        self.start_board = None
         self.generate_board()
+        self.game_over = False
 
     def generate_board(self):
         """Generates a solvable sudoku board containing only 17 numbers.
@@ -20,20 +27,29 @@ class Sudoku():
         """
         # Using random.sample, we generate two lists containing numbers 0-8, where
         # 0-2, 3-5, 6-8 are grouped together.
-        rows = [ g*3 + r for g in sample(range(3), 3) for r in sample(range(3), 3) ]
-        cols = [ g*3 + c for g in sample(range(3), 3) for c in sample(range(3), 3) ]
+        rows = [g*3 + r for g in sample(range(3), 3)
+                for r in sample(range(3), 3)]
+        cols = [g*3 + c for g in sample(range(3), 3)
+                for c in sample(range(3), 3)]
         # We generate a list of 1-9 with random sampling.
         values = sample(range(1, 10), 9)
         # We generate a complete board using the numbers of values and the ordering
         # of rows and cols.
-        board = [[values[(3*(r%3)+r//3+c)%9] for c in cols] for r in rows]
+        board = [[values[(3*(r % 3)+r//3+c) % 9] for c in cols] for r in rows]
 
         # We chose random 81-17=64 positions to erase the value.
         for i in sample(range(81), 64):
-            board[i//9][i%9] = 0
+            board[i//9][i % 9] = 0
 
-        self.board = board
-        self.start_board = board.copy()
+        self.game_over = False
+        self.start_board = board
+        self.board = deepcopy(board)
+
+    def reset_board(self):
+        """Resets the board to be equal to start_board
+        """
+        self.game_over = False
+        self.board = deepcopy(self.start_board)
 
     def __get_empty_space(self) -> tuple[int, int]:
         """Searches a empty space in the board.
@@ -75,27 +91,26 @@ class Sudoku():
                     return False
         return True
 
-
-    def solve(self):
+    def solve(self, gui=None):
         """Solves the sudoku using backtracking, it tranverses the search tree
         recursively in depth-first order.
-
-        Args:
-            board: Sudoku board.
 
         Returns:
             bool: Indicates if the board is solved.
         """
-
         row, col = self.__get_empty_space()
         if row == -1:
             return True
         for value in range(1, 10):
             if self.__valid_value(row, col, value):
                 self.board[row][col] = value
-                if self.solve():
+                if gui:
+                    gui.show_change()
+                    time.sleep(0.01)
+                if self.solve(gui):
                     return True
                 self.board[row][col] = 0
+        self.game_over = True
         return False
 
     def check_win(self) -> bool:
@@ -114,7 +129,7 @@ class Sudoku():
             for column in range(3):
                 if not self.__check_square(row, column):
                     return False
-        #self.game_over = True
+        self.game_over = True
         return True
 
     def __check_block(self, block: list):
@@ -139,9 +154,6 @@ class Sudoku():
 
     def __str__(self):
         """Prints the board to the console with styling.
-
-        Args:
-            board: Sudoku board.
         """
         string = ""
         for i in range(9):
@@ -151,9 +163,11 @@ class Sudoku():
                 string += "╠═══╪═══╪═══╬═══╪═══╪═══╬═══╪═══╪═══╣\n"
             else:
                 string += "╟───┼───┼───╫───┼───┼───╫───┼───┼───╢\n"
-            string += "║ {} │ {} │ {} ║ {} │ {} │ {} ║ {} │ {} │ {} ║\n".format(*self.board[i])
+            string += "║ {} │ {} │ {} ║ {} │ {} │ {} ║ {} │ {} │ {} ║\n".format(
+                *self.board[i])
         string += "╚═══╧═══╧═══╩═══╧═══╧═══╩═══╧═══╧═══╝\n"
         return string
+
 
 if __name__ == '__main__':
     example = Sudoku()
