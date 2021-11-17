@@ -14,7 +14,7 @@
 A [Sudoku](https://en.wikipedia.org/wiki/Sudoku) GUI that generates a sudoku board and lets the user play or visualize how it is solved by backtracking.
 
 <p align="center">
-	<img src="https://github.com/enriquejiwa/space-invaders/blob/main/assets/screenrecording.gif">
+	<img src="https://github.com/enriquejiwa/sudoku-solver/blob/main/assets/screenrecording.gif">
 </p>
 
 ## Controls
